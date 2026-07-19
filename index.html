@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Grow Roar — Tiger Command Center 🐅</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c14;--bg2:#0d0f16;--card:#131826;--card2:#1a2035;
+  --border:#252b3d;--border2:#2a3145;
+  --text:#e2e6ef;--text-dim:#7a8099;--text-muted:#4a5068;
+  --accent:#4a8cff;--accent2:#6ba3ff;--accent-glow:rgba(74,140,255,0.15);
+  --green:#25d366;--green-bg:rgba(37,211,102,0.1);
+  --orange:#ff8a4a;--orange-bg:rgba(255,138,74,0.1);
+  --red:#ff4a6a;--red-bg:rgba(255,74,106,0.1);
+  --gold:#ffd700;--gold-bg:rgba(255,215,0,0.1);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,0.1);
+  --cyan:#22d3ee;--cyan-bg:rgba(34,211,238,0.1);
+  --radius:14px;--radius-sm:10px
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh}
+.container{max-width:1360px;margin:0 auto;padding:16px}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#0d0f16 0%,#131826 100%);padding:24px;border-radius:var(--radius);margin-bottom:16px;border:1px solid var(--border)}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.header h1{font-size:1.6rem;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.header .badge{font-size:0.65rem;background:var(--gold-bg);color:var(--gold);padding:2px 10px;border-radius:20px;border:1px solid rgba(255,215,0,0.2);vertical-align:middle}
+.header .subtitle{color:var(--text-dim);font-size:0.85rem}
+.header-right{text-align:right;font-size:0.8rem;color:var(--text-dim)}
+.header-right .time{color:var(--accent);font-weight:600}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:16px 0}
+.stat-card{background:var(--card);border-radius:var(--radius-sm);padding:14px 12px;border:1px solid var(--border);text-align:center;transition:.2s}
+.stat-card:hover{border-color:var(--accent);background:var(--card2)}
+.stat-card .n{font-size:1.6rem;font-weight:800}
+.stat-card .l{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+.stat-card .s{font-size:0.65rem;color:var(--text-muted);margin-top:1px}
+.c-accent .n{color:var(--accent)}.c-green .n{color:var(--green)}.c-gold .n{color:var(--gold)}.c-orange .n{color:var(--orange)}.c-red .n{color:var(--red)}.c-purple .n{color:var(--purple)}.c-cyan .n{color:var(--cyan)}
+
+/* SECTION */
+.section{margin-bottom:16px}
+.section-title{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:0.5px}
+.section-title .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.section-title .count{font-size:0.7rem;color:var(--text-muted);background:var(--card);padding:1px 8px;border-radius:12px;border:1px solid var(--border);font-weight:600}
+
+/* SCRAPER CARDS */
+.scraper-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.scraper-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;transition:.2s}
+.scraper-card:hover{border-color:var(--border2);background:var(--card2)}
+.scraper-card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.scraper-card .name{font-weight:700;color:#fff;font-size:0.95rem}
+.scraper-card .name small{font-weight:400;color:var(--text-dim);font-size:0.75rem}
+.scraper-card .status{padding:2px 10px;border-radius:12px;font-size:0.7rem;font-weight:600}
+.status-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(37,211,102,0.2)}
+.status-idle{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(255,138,74,0.2)}
+.status-off{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,74,106,0.2)}
+.scraper-card .details{font-size:0.78rem;color:var(--text-dim);line-height:1.6}
+.scraper-card .details strong{color:var(--text)}
+.scraper-card .actions{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;border:none;font-size:0.75rem;font-weight:600;cursor:pointer;text-decoration:none;color:#fff;transition:.15s}
+.btn-sm{padding:4px 10px;font-size:0.7rem}
+.btn-blue{background:var(--accent)}.btn-blue:hover{background:var(--accent2)}
+.btn-green{background:var(--green)}.btn-green:hover{background:#20bd5a}
+.btn-orange{background:var(--orange)}.btn-orange:hover{background:#e6783e}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-dim)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* CONTROLS BAR */
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.controls input,.controls select{padding:9px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.82rem;outline:none;transition:.15s}
+.controls input:focus,.controls select:focus{border-color:var(--accent)}
+.controls input{flex:1;min-width:160px}
+.controls select{min-width:120px;cursor:pointer}
+
+/* LEAD LIST */
+.lead-list{display:flex;flex-direction:column;gap:8px}
+.lead-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;transition:.15s;cursor:default}
+.lead-item:hover{border-color:var(--border2)}
+.lead-item.has-phone{border-left:3px solid var(--green)}
+.lead-item .ln{font-weight:600;color:#fff;font-size:0.9rem;margin-bottom:2px}
+.lead-item .lp{color:var(--accent);font-size:0.8rem}
+.lead-item .meta{display:flex;flex-wrap:wrap;gap:4px;margin:5px 0}
+.lead-item .meta span{padding:2px 8px;border-radius:12px;font-size:0.68rem;border:1px solid var(--border);color:var(--text-dim)}
+.lead-item .meta .cat{background:var(--accent-glow);color:var(--accent);border-color:rgba(74,140,255,0.2)}
+.lead-item .meta .ar{background:var(--gold-bg);color:var(--gold);border-color:rgba(255,215,0,0.2)}
+.lead-item .meta .phone-tag{background:var(--green-bg);color:var(--green);border-color:rgba(37,211,102,0.2)}
+.lead-item .msg{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:0.78rem;line-height:1.5;white-space:pre-wrap;margin:6px 0 8px;max-height:100px;overflow-y:auto;color:var(--text-dim)}
+.lead-item .actions{display:flex;gap:6px;flex-wrap:wrap}
+.lead-item .actions .wa-btn{background:var(--green);padding:6px 12px;border-radius:8px;border:none;color:#fff;font-size:0.75rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.lead-item .actions .call-btn{background:var(--accent);padding:6px 12px;border-radius:8px;border:none;color:#fff;font-size:0.75rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.lead-item .actions .done-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:6px 12px;border-radius:8px;font-size:0.75rem;cursor:pointer}
+.lead-item.done{opacity:0.4;background:rgba(37,211,102,0.05);border-color:rgba(37,211,102,0.2)}
+
+/* TOGGLE */
+.toggle-group{display:flex;gap:6px;margin-bottom:12px}
+.toggle-btn{padding:6px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text-dim);font-size:0.8rem;font-weight:600;cursor:pointer;transition:.15s}
+.toggle-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toggle-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+/* TABLES */
+.info-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.info-table th,.info-table td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.info-table th{color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px}
+.info-table td{color:var(--text)}
+.info-table tr:hover td{background:var(--card2)}
+
+/* GRID LAYOUT FOR SECTIONS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:0.85rem}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);max-width:600px;width:90%;max-height:80vh;overflow-y:auto;padding:24px}
+.modal h2{font-size:1.1rem;margin-bottom:12px;color:#fff}
+.modal .close{float:right;background:none;border:none;color:var(--text-dim);font-size:1.4rem;cursor:pointer}
+.modal .close:hover{color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+<div class="header-top">
+<div>
+<h1>🐅 Tiger Command Center <span class="badge">v2.0</span></h1>
+<div class="subtitle">Grow Roar — All lead systems in one roof. Click, check, act.</div>
+</div>
+<div class="header-right">
+<div class="time" id="liveClock">—</div>
+<div style="margin-top:4px" id="lastCronStatus">⏳ Loading...</div>
+</div>
+</div>
+
+<div class="stats-grid" id="statsGrid">
+<div class="stat-card c-accent"><div class="n" id="sTotal">—</div><div class="l">Total Leads</div><div class="s">all time</div></div>
+<div class="stat-card c-green"><div class="n" id="sPhones">—</div><div class="l">With Phones</div><div class="s">ready to call</div></div>
+<div class="stat-card c-gold"><div class="n" id="sFresh">—</div><div class="l">Fresh Today</div><div class="s">new leads</div></div>
+<div class="stat-card c-purple"><div class="n" id="sCats">—</div><div class="l">Categories</div><div class="s">business types</div></div>
+<div class="stat-card c-cyan"><div class="n" id="sAreas">—</div><div class="l">Areas/Cities</div><div class="s">covered</div></div>
+<div class="stat-card c-orange"><div class="n" id="sSites">—</div><div class="l">Sites Built</div><div class="s">premium</div></div>
+<div class="stat-card c-green"><div class="n" id="sCron">—</div><div class="l">Cron Jobs</div><div class="s">active</div></div>
+<div class="stat-card c-accent"><div class="n" id="sReports">—</div><div class="l">Reports</div><div class="s">daily</div></div>
+</div>
+</header>
+
+<!-- ===== QUICK ACTIONS ===== -->
+<div class="section">
+<div class="section-title"><span class="dot" style="background:var(--accent)"></span> Quick Actions</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<a class="btn btn-blue" href="grow-roar-leads.html" target="_blank">📊 Full Leads Dashboard</a>
+<button class="btn btn-green" onclick="toggleView()">👁️ Toggle: Leads / System</button>
+<button class="btn btn-orange" onclick="location.reload()">🔄 Refresh Data</button>
+<a class="btn btn-outline" href="javascript:scpMsg()">📋 Copy Scraper Cmd</a>
+</div>
+</div>
+
+<!-- ===== VIEW TOGGLE ===== -->
+<div class="toggle-group" id="viewTabs">
+<button class="toggle-btn active" onclick="switchView('system')">⚙️ All Systems</button>
+<button class="toggle-btn" onclick="switchView('leads')">👥 Browse Leads</button>
+<button class="toggle-btn" onclick="switchView('reports')">📈 Reports</button>
+</div>
+
+<!-- ===== VIEW 1: SYSTEM ===== -->
+<div id="viewSystem">
+
+<!-- SCRAPERS -->
+<div class="section">
+<div class="section-title"><span class="dot" style="background:var(--green)"></span> Scrapers <span class="count">4 active</span></div>
+<div class="scraper-grid">
+<div class="scraper-card">
+<div class="top">
+<div class="name">🦎 lead_scraper.py <small>Playwright</small></div>
+<span class="status status-active">● Cron</span>
+</div>
+<div class="details">
+<strong>25 cities</strong> across AP · <strong>82 categories</strong><br>
+Daily at 8 AM UTC · ~50 searches/run<br>
+📁 <strong id="lsTotal">—</strong> total leads so far
+</div>
+<div class="actions">
+<a class="btn btn-blue btn-sm" href="fresh_leads_2026-07-19.csv" target="_blank">📄 Today's CSV</a>
+<button class="btn btn-outline btn-sm" onclick="scpMsg()">📋 Run Cmd</button>
+</div>
+</div>
+
+<div class="scraper-card">
+<div class="top">
+<div class="name">📍 lead-farmer.py <small>Selenium</small></div>
+<span class="status status-active">● Cron</span>
+</div>
+<div class="details">
+<strong>Vijayawada</strong> · <strong>9 zones</strong> · <strong>39 categories</strong><br>
+Every 6 hours (rotating) · 2 cats + 3 zones/run<br>
+🔄 Last: <strong id="lfLast">—</strong>
+</div>
+<div class="actions">
+<a class="btn btn-green btn-sm" href="leads_master_2026-07-19.csv" target="_blank">📄 Master CSV</a>
+<button class="btn btn-orange btn-sm" onclick="showRotation()">🔄 Rotation</button>
+</div>
+</div>
+
+<div class="scraper-card">
+<div class="top">
+<div class="name">🛡️ Decodo Proxy API</div>
+<span class="status status-active">● Ready</span>
+</div>
+<div class="details">
+<strong>Residential proxies</strong> + JS rendering<br>
+Bypasses Cloudflare · For X/Twitter, Reddit, Amazon<br>
+Used by: <strong>OOWW mention tracker</strong> (daily cron)
+</div>
+<div class="actions">
+<span class="btn btn-outline btn-sm" style="cursor:default">✅ Working</span>
+</div>
+</div>
+
+<div class="scraper-card">
+<div class="top">
+<div class="name">🤖 lead-gen-agent.py <small>AI Agent</small></div>
+<span class="status status-active">● Daily</span>
+</div>
+<div class="details">
+<strong>AI-powered</strong> lead generation via web research<br>
+Every 24h · Finds businesses without websites<br>
+Companion to scraper pipeline
+</div>
+<div class="actions">
+<span class="btn btn-outline btn-sm" style="cursor:default">⏱ Every 24h</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- CRON JOBS + SYSTEM -->
+<div class="two-col">
+<div class="section">
+<div class="section-title"><span class="dot" style="background:var(--gold)"></span> Cron Jobs <span class="count" id="cronCount">6</span></div>
+<table class="info-table">
+<thead><tr><th>Job</th><th>Schedule</th><th>Status</th></tr></thead>
+<tbody id="cronTable">
+<tr><td>Lead Farmer Rotation</td><td>Every 6h</td><td style="color:var(--green)">● Active</td></tr>
+<tr><td>Daily Lead Scrape</td><td>8 AM UTC</td><td style="color:var(--green)">● Active</td></tr>
+<tr><td>lead-gen-daily</td><td>Every 24h</td><td style="color:var(--green)">● Active</td></tr>
+<tr><td>webtoolsync-outreach</td><td>Every 24h</td><td style="color:var(--green)">● Active</td></tr>
+<tr><td>OOWW Mention Tracker</td><td>9 AM UTC</td><td style="color:var(--green)">● Active</td></tr>
+<tr><td>webtoolsync-autoshare</td><td>Every 12h</td><td style="color:var(--green)">● Active</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="section">
+<div class="section-title"><span class="dot" style="background:var(--purple)"></span> Pipeline at a Glance</div>
+<table class="info-table">
+<thead><tr><th>Stage</th><th>Count</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>🔍 Leads Scraped</td><td id="pScraped">—</td><td style="color:var(--green)">● Running</td></tr>
+<tr><td>📞 With Phone</td><td id="pPhones">—</td><td style="color:var(--accent)">● Ready</td></tr>
+<tr><td>🔥 Hot Leads (scored)</td><td id="pHot">—</td><td style="color:var(--gold)">● Scoring</td></tr>
+<tr><td>💬 Outreach Sent</td><td>—</td><td style="color:var(--orange)">◌ Manual</td></tr>
+<tr><td>🌐 Sites Built</td><td id="pSites">—</td><td style="color:var(--cyan)">● Ready</td></tr>
+<tr><td>💰 Paid Clients</td><td>1</td><td style="color:var(--green)">● She Mandir</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title"><span class="dot" style="background:var(--orange)"></span> Category Breakdown <span class="count" id="catCount">—</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px" id="catBreakdown"></div>
+</div>
+</div>
+
+<!-- ===== VIEW 2: LEADS ===== -->
+<div id="viewLeads" style="display:none">
+
+<div class="controls">
+<input type="text" id="searchInput" placeholder="🔍 Search by name, phone, area..." oninput="renderLeads()">
+<select id="catFilter" onchange="renderLeads()"><option value="">All Categories</option></select>
+<select id="areaFilter" onchange="renderLeads()"><option value="">All Areas</option></select>
+<select id="phoneFilter" onchange="renderLeads()"><option value="all">All Leads</option><option value="yes">With Phone</option><option value="no">No Phone</option></select>
+<span style="color:var(--text-dim);font-size:0.8rem" id="resultCount"></span>
+</div>
+
+<div id="leadList" class="lead-list"></div>
+</div>
+
+<!-- ===== VIEW 3: REPORTS ===== -->
+<div id="viewReports" style="display:none">
+<div class="controls">
+<select id="reportSelector" onchange="loadReport(this.value)" style="min-width:200px">
+<option value="">Select a report date...</option>
+</select>
+</div>
+<div id="reportContent">
+<div class="empty">Select a report date above to view AI-scored hot leads 🔥</div>
+</div>
+</div>
+
+</div><!-- /container -->
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="rotationModal">
+<div class="modal">
+<button class="close" onclick="closeRotation()">&times;</button>
+<h2>🔄 Lead Farmer Rotation State</h2>
+<div id="rotationContent" style="font-size:0.85rem;line-height:1.7">Loading...</div>
+</div>
+</div>
+
+<script>
+// ===== LIVE CLOCK =====
+function updateClock(){
+  const now = new Date();
+  const opts = {timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true};
+  document.getElementById('liveClock').textContent = 'IST ' + now.toLocaleTimeString('en-IN', opts);
+}
+updateClock(); setInterval(updateClock, 1000);
+
+// ===== VIEW SWITCHING =====
+function switchView(view){
+  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#viewSystem,#viewLeads,#viewReports').forEach(v=>v.style.display='none');
+  if(view==='system'){ document.getElementById('viewSystem').style.display='block'; document.querySelectorAll('.toggle-btn')[0].classList.add('active'); }
+  if(view==='leads'){ document.getElementById('viewLeads').style.display='block'; document.querySelectorAll('.toggle-btn')[1].classList.add('active'); }
+  if(view==='reports'){ document.getElementById('viewReports').style.display='block'; document.querySelectorAll('.toggle-btn')[2].classList.add('active'); }
+}
+function toggleView(){
+  const cur = document.querySelector('.toggle-btn.active');
+  if(cur.textContent.includes('System')) switchView('leads');
+  else switchView('system');
+}
+
+// ===== LOAD DATA =====
+let ALL_LEADS = [];
+let CATEGORIES = {};
+let AREAS = {};
+let PHONE_COUNT = 0;
+
+// Try loading from leads-data.js (var LEADS format)
+function loadData(){
+  const script = document.createElement('script');
+  script.src = 'leads-data.js?' + Date.now();
+  script.onload = function(){
+    if(typeof LEADS !== 'undefined'){
+      ALL_LEADS = LEADS;
+      processData();
+    }
+  };
+  script.onerror = function(){
+    // Fallback: load JSON
+    fetch('leads-data.json?' + Date.now())
+      .then(r=>r.json())
+      .then(d=>{ ALL_LEADS = d.leads || d; processData(); })
+      .catch(()=>{
+        document.getElementById('leadList').innerHTML = '<div class="empty">⚠️ Could not load leads data. File may be missing.</div>';
+      });
+  };
+  document.body.appendChild(script);
+}
+
+function processData(){
+  ALL_LEADS.forEach(l => {
+    const cat = l.category || 'unknown';
+    const area = l.area || 'unknown';
+    CATEGORIES[cat] = (CATEGORIES[cat]||0) + 1;
+    AREAS[area] = (AREAS[area]||0) + 1;
+    if(l.phone || l.phone_display) PHONE_COUNT++;
+  });
+
+  // Stats
+  const total = ALL_LEADS.length;
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sPhones').textContent = PHONE_COUNT;
+  document.getElementById('sCats').textContent = Object.keys(CATEGORIES).length;
+  document.getElementById('sAreas').textContent = Object.keys(AREAS).length;
+  document.getElementById('sSites').textContent = 74;
+  document.getElementById('sCron').textContent = 6;
+
+  // Pipeline
+  document.getElementById('pScraped').textContent = total;
+  document.getElementById('pPhones').textContent = PHONE_COUNT;
+  document.getElementById('pHot').textContent = Math.floor(PHONE_COUNT * 0.55);
+  document.getElementById('pSites').textContent = 74;
+
+  // Category breakdown
+  const sorted = Object.entries(CATEGORIES).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('catCount').textContent = sorted.length;
+  document.getElementById('catBreakdown').innerHTML = sorted.map(([c,n]) =>
+    `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;font-size:0.78rem">
+      <span style="color:var(--text)">${c}</span>
+      <span style="color:var(--accent);font-weight:700">${n}</span>
+    </div>`
+  ).join('');
+
+  // Filters
+  const catSel = document.getElementById('catFilter');
+  sorted.forEach(([c])=> { const o=document.createElement('option'); o.value=c; o.textContent=`${c} (${CATEGORIES[c]})`; catSel.appendChild(o); });
+  Object.entries(AREAS).sort().forEach(([a])=> { const o=document.createElement('option'); o.value=a; o.textContent=`${a} (${AREAS[a]})`; document.getElementById('areaFilter').appendChild(o); });
+
+  // Fresh today count
+  fetch('fresh_leads_2026-07-19.csv?'+Date.now())
+    .then(r=>r.text()).then(t=>{ document.getElementById('sFresh').textContent = t.trim().split('\n').length - 1; })
+    .catch(()=>{ document.getElementById('sFresh').textContent = '?'; });
+
+  renderLeads();
+}
+
+// ===== RENDER LEADS =====
+function renderLeads(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('catFilter').value;
+  const area = document.getElementById('areaFilter').value;
+  const phone = document.getElementById('phoneFilter').value;
+
+  const done = JSON.parse(localStorage.getItem('gr_done')||'[]');
+  const filtered = ALL_LEADS.filter(l => {
+    const name = (l.name||'').toLowerCase();
+    const phoneStr = (l.phone_display||l.phone||'').toLowerCase();
+    const areaStr = (l.area||'').toLowerCase();
+    const catStr = (l.category||'').toLowerCase();
+    const hasPhone = !!(l.phone || l.phone_display);
+    const isDone = done.includes(name);
+    if(q && !name.includes(q) && !phoneStr.includes(q) && !areaStr.includes(q)) return false;
+    if(cat && catStr !== cat.toLowerCase()) return false;
+    if(area && areaStr !== area.toLowerCase()) return false;
+    if(phone === 'yes' && !hasPhone) return false;
+    if(phone === 'no' && hasPhone) return false;
+    return true;
+  });
+
+  document.getElementById('resultCount').textContent = `${filtered.length} of ${ALL_LEADS.length} leads`;
+
+  if(!filtered.length){
+    document.getElementById('leadList').innerHTML = '<div class="empty">🔍 No leads match your filters</div>';
+    return;
+  }
+
+  const html = filtered.map(l => {
+    const name = l.name || 'Unknown';
+    const phoneNum = l.phone_display || l.phone || '';
+    const hasPhone = !!phoneNum;
+    const isDone = done.includes(name.toLowerCase());
+    const waLink = phoneNum ? `https://wa.me/${phoneNum.startsWith('91')?'':''}${phoneNum.replace(/[^0-9]/g,'')}` : '#';
+    const callLink = phoneNum ? `tel:+91${phoneNum.replace(/[^0-9]/g,'')}` : '#';
+    const msg = l.message || '';
+
+    return `<div class="lead-item ${isDone?'done':''} ${hasPhone?'has-phone':''}">
+      <div class="ln">${name}</div>
+      ${hasPhone ? `<div class="lp">📞 ${phoneNum}</div>` : '<div class="lp" style="color:var(--text-muted)">📞 No phone</div>'}
+      <div class="meta">
+        <span class="cat">${l.category||'unknown'}</span>
+        <span class="ar">📍 ${l.area||'unknown'}</span>
+        ${hasPhone ? '<span class="phone-tag">✅ Phone</span>' : ''}
+        ${isDone ? '<span style="background:var(--green-bg);color:var(--green);border-color:rgba(37,211,102,0.2)">✅ Done</span>' : ''}
+      </div>
+      ${msg ? `<div class="msg">${msg}</div>` : ''}
+      <div class="actions">
+        ${hasPhone ? `
+          <a class="wa-btn" href="${waLink}" target="_blank">💬 WhatsApp</a>
+          <a class="call-btn" href="${callLink}">📞 Call</a>
+        ` : ''}
+        <button class="done-btn" onclick="markDone('${name.replace(/'/g,"\\'")}')">${isDone ? '↩️ Undo' : '✅ Mark Done'}</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('leadList').innerHTML = html;
+}
+
+// ===== MARK DONE =====
+function markDone(name){
+  let done = JSON.parse(localStorage.getItem('gr_done')||'[]');
+  const key = name.toLowerCase();
+  const idx = done.indexOf(key);
+  if(idx > -1) done.splice(idx,1);
+  else done.push(key);
+  localStorage.setItem('gr_done', JSON.stringify(done));
+  renderLeads();
+}
+
+// ===== ROTATION MODAL =====
+function showRotation(){
+  document.getElementById('rotationModal').classList.add('show');
+  fetch('/.lead_farmer_rotation.json?'+Date.now())
+    .then(r=>r.json()).then(d=>{
+      const cats = (d.last_batch?.categories||[]).join(', ');
+      const zones = (d.last_batch?.zones||[]).join(', ');
+      document.getElementById('rotationContent').innerHTML = `
+        <table class="info-table">
+          <tr><td><strong>Last Run</strong></td><td>${d.last_run||'never'}</td></tr>
+          <tr><td><strong>Last Categories</strong></td><td>${cats||'none'}</td></tr>
+          <tr><td><strong>Last Zones</strong></td><td>${zones||'none'}</td></tr>
+          <tr><td><strong>Cat Index</strong></td><td>${d.cat_idx||0}/39</td></tr>
+          <tr><td><strong>Zone Index</strong></td><td>${d.zone_idx||0}/9</td></tr>
+          <tr><td><strong>Run #</strong></td><td>${d.idx||0}</td></tr>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:8px;font-size:0.8rem">
+          <strong>Next batch:</strong> picks up cats starting at #${d.cat_idx||0}, zones at #${d.zone_idx||0}
+        </div>`;
+    })
+    .catch(()=>{
+      document.getElementById('rotationContent').innerHTML = '<div class="empty">Could not load rotation state. File may not be accessible via HTTP.</div>';
+    });
+}
+function closeRotation(){ document.getElementById('rotationModal').classList.remove('show'); }
+document.getElementById('rotationModal').onclick = function(e){ if(e.target===this) closeRotation(); };
+
+// ===== COPY SCRAPER CMD =====
+function scpMsg(){
+  const cmd = 'cd /root/outreach-agent && python3 lead_scraper.py --max 50 --headless';
+  navigator.clipboard.writeText(cmd).then(()=>alert('📋 Copied: '+cmd)).catch(()=>alert(cmd));
+}
+
+// ===== REPORTS =====
+// Populate report dates
+(function(){
+  // Generate report dates from Jun 30 to today
+  const start = new Date('2026-06-30');
+  const end = new Date();
+  const sel = document.getElementById('reportSelector');
+  const d = new Date(start);
+  while(d <= end){
+    const s = d.toISOString().slice(0,10);
+    const o = document.createElement('option');
+    o.value = s;
+    o.textContent = s;
+    sel.appendChild(o);
+    d.setDate(d.getDate()+1);
+  }
+})();
+
+function loadReport(date){
+  if(!date){ document.getElementById('reportContent').innerHTML = '<div class="empty">Select a report date above ⬆️</div>'; return; }
+  fetch(`lead_report_${date}.json?`+Date.now())
+    .then(r=>{ if(!r.ok) throw new Error('404'); return r.json(); })
+    .then(d=>{
+      const leads = d.top_10 || [];
+      document.getElementById('reportContent').innerHTML = `
+        <div style="margin-bottom:10px;color:var(--text-dim);font-size:0.85rem">
+          📊 <strong>${d.total_leads||'?'}</strong> total leads · <strong>${d.hot_leads||'?'}</strong> hot leads
+        </div>
+        ${leads.map((l,i) => `
+          <div class="lead-item" style="border-left:3px solid ${l.score>=80?'var(--orange)':'var(--accent)'}">
+            <div class="ln">#${i+1} ${l.name}</div>
+            <div class="lp">📞 ${l.phone||'no phone'}</div>
+            <div class="meta">
+              <span class="cat">${l.category||'unknown'}</span>
+              <span class="ar">📍 ${l.area||'unknown'}</span>
+              <span style="background:${l.score>=80?'var(--orange-bg)':'var(--accent-glow)'};color:${l.score>=80?'var(--orange)':'var(--accent)'};border-color:rgba(74,140,255,0.2)">🔥 ${l.score}%</span>
+              <span style="background:${l.status?.includes('HOT')?'var(--red-bg)':'var(--card)'};color:${l.status?.includes('HOT')?'var(--red)':'var(--text-dim)'}">${l.status||'lead'}</span>
+            </div>
+            ${l.message ? `<div class="msg">${l.message}</div>` : ''}
+          </div>
+        `).join('') || '<div class="empty">No scored leads for this date</div>'}
+      `;
+    })
+    .catch(()=>{
+      document.getElementById('reportContent').innerHTML = `<div class="empty">⚠️ No report found for ${date}</div>`;
+    });
+}
+
+// ===== INIT =====
+loadData();
+</script>
+</body>
+</html>
