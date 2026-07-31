@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 <title>Grow Roar — Tiger Command Center 🐅</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -193,7 +194,7 @@ Daily at 8 AM UTC · ~50 searches/run<br>
 📁 <strong id="lsTotal">—</strong> total leads so far
 </div>
 <div class="actions">
-<a class="btn btn-blue btn-sm" href="fresh_leads_2026-07-19.csv" target="_blank">📄 Today's CSV</a>
+<a class="btn btn-blue btn-sm" href="#" onclick="downloadCSV(event)">📄 Download CSV</a>
 <button class="btn btn-outline btn-sm" onclick="scpMsg()">📋 Run Cmd</button>
 </div>
 </div>
@@ -412,10 +413,12 @@ function processData(){
   sorted.forEach(([c])=> { const o=document.createElement('option'); o.value=c; o.textContent=`${c} (${CATEGORIES[c]})`; catSel.appendChild(o); });
   Object.entries(AREAS).sort().forEach(([a])=> { const o=document.createElement('option'); o.value=a; o.textContent=`${a} (${AREAS[a]})`; document.getElementById('areaFilter').appendChild(o); });
 
-  // Fresh today count
-  fetch('fresh_leads_2026-07-19.csv?'+Date.now())
-    .then(r=>r.text()).then(t=>{ document.getElementById('sFresh').textContent = t.trim().split('\n').length - 1; })
-    .catch(()=>{ document.getElementById('sFresh').textContent = '?'; });
+  // Fresh today count — computed from LEADS data (no CSV fetch needed)
+  (function(){
+    var today = new Date().toISOString().slice(0,10);
+    var fresh = LEADS.filter(function(l){ return l.date === today; }).length;
+    document.getElementById('sFresh').textContent = fresh;
+  })();
 
   renderLeads();
 }
@@ -576,6 +579,20 @@ function loadReport(date){
 
 // ===== INIT =====
 loadData();
+
+function downloadCSV(ev){
+  if(ev){ ev.preventDefault(); }
+  var rows = [['name','phone','area','category','city','address','website','rating','date']];
+  (typeof filteredLeads !== 'undefined' ? filteredLeads : LEADS).forEach(function(l){
+    rows.push([l.name||'', l.phone||l.phone_display||'', l.area||'', l.category||'', l.city||'', l.address||'', l.website||'', l.rating||'', l.date||'']);
+  });
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+  var blob = new Blob([csv], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'grow-roar-leads-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
 </script>
 </body>
 </html>
